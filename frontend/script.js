@@ -2,7 +2,9 @@ const toggleForm = document.getElementById('toggle-form');
 const formTitle = document.getElementById('form-title');
 const loginForm = document.getElementById('login-form');
 const signupForm = document.getElementById('signup-form');
+const signUpButton = document.getElementById('signup-btn');
 
+// Toggle between Login and Signup forms
 toggleForm.addEventListener('click', () => {
     if (loginForm.style.display === 'none') {
         loginForm.style.display = 'block';
@@ -14,5 +16,29 @@ toggleForm.addEventListener('click', () => {
         signupForm.style.display = 'block';
         formTitle.textContent = 'Sign Up';
         toggleForm.textContent = "Already have an account? Login";
+    }
+});
+
+// Sign Up functionality
+signUpButton.addEventListener('click', async (event) => {
+    event.preventDefault(); // Prevent form from submitting
+    console.log("signup");
+
+    const name = document.getElementById("signup-name").value.trim();
+    const email = document.getElementById("signup-email").value.trim();
+    const password = document.getElementById("signup-password").value.trim();
+
+    if (name === "" || email === "" || password === "") {
+        alert("Enter all fields");
+        return;
+    }
+
+    const user = { name, email, password };
+
+    try {
+        const response = await axios.post("http://localhost:3003/users/signup", { user });
+        console.log("Signup successful", response.data);
+    } catch (error) {
+        alert("Email ID already registered!");
     }
 });
