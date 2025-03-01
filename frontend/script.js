@@ -3,6 +3,7 @@ const formTitle = document.getElementById('form-title');
 const loginForm = document.getElementById('login-form');
 const signupForm = document.getElementById('signup-form');
 const signUpButton = document.getElementById('signup-btn');
+const loginButton = document.getElementById('login-btn');
 
 // Toggle between Login and Signup forms
 toggleForm.addEventListener('click', () => {
@@ -42,3 +43,21 @@ signUpButton.addEventListener('click', async (event) => {
         alert("Email ID already registered!");
     }
 });
+loginButton.addEventListener('click', async(event)=>{
+    event.preventDefault();
+    const email = document.getElementById("login-email").value.trim();
+    const password = document.getElementById("login-password").value.trim();
+    if(email=="" || password==""){
+        alert("Enter all fields");
+        return;
+    }
+    const user ={email, password};
+    
+    try {
+        const response = await axios.post("http://localhost:3003/users/login", { user });
+        console.log("Login successful", response.data);
+    } catch (error) {
+        
+    }
+
+})
