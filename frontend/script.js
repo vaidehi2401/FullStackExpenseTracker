@@ -48,7 +48,7 @@ loginButton.addEventListener('click', async(event)=>{
     const email = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value.trim();
     if(email=="" || password==""){
-        alert("Enter all fields");
+        alert("⚠️ All fields are required!");
         return;
     }
     const user ={email, password};
@@ -57,7 +57,17 @@ loginButton.addEventListener('click', async(event)=>{
         const response = await axios.post("http://localhost:3003/users/login", { user });
         console.log("Login successful", response.data);
     } catch (error) {
-        
+        const status = error.response.status;
+        const message = error.response.data.error; 
+        if (status === 400) {
+            alert("⚠️ All fields are required!");
+        } else if (status === 404) {
+            alert("❌ User not found! Please register first.");
+        } else if (status === 401) {
+            alert("🔑 Invalid password! Please try again.");
+        } else {
+            alert("⚠️ Something went wrong: " + message);
+        }
     }
 
 })
