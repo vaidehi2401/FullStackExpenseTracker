@@ -4,8 +4,10 @@ const loginForm = document.getElementById('login-form');
 const signupForm = document.getElementById('signup-form');
 const signUpButton = document.getElementById('signup-btn');
 const loginButton = document.getElementById('login-btn');
-
-// Toggle between Login and Signup forms
+const container = document.getElementById("form-container")
+const expenseForm = document.getElementById("expense-form-container")
+const expenseButton = document.getElementById("expense-button");
+const expensesList = document.getElementById("liste");
 toggleForm.addEventListener('click', () => {
     if (loginForm.style.display === 'none') {
         loginForm.style.display = 'block';
@@ -20,7 +22,6 @@ toggleForm.addEventListener('click', () => {
     }
 });
 
-// Sign Up functionality
 signUpButton.addEventListener('click', async (event) => {
     event.preventDefault(); // Prevent form from submitting
     console.log("signup");
@@ -56,6 +57,9 @@ loginButton.addEventListener('click', async(event)=>{
     try {
         const response = await axios.post("http://localhost:3003/users/login", { user });
         console.log("Login successful", response.data);
+       container.style.display="none";
+       expenseForm.style.display="block"
+       getExpense();
     } catch (error) {
         const status = error.response.status;
         const message = error.response.data.error; 
@@ -71,3 +75,35 @@ loginButton.addEventListener('click', async(event)=>{
     }
 
 })
+expenseButton.addEventListener('click', async(event)=>{
+    event.preventDefault();
+    const amount = document.getElementById("expense-amount").value.trim();
+    const description = document.getElementById("expense-description").value.trim();
+    const category = document.getElementById("expense-category").value.trim();
+    if(!amount || !description || !category){
+        alert("⚠️ All fields are required!");
+        return
+    }
+   const expense ={amount, description, category};
+   try{
+    const response = axios.post("http://localhost:3003/expense/add-expense", {expense});
+    alert("Expense added successfully💴");
+    return;
+   }
+   catch(err){
+    console.log(err);
+   }
+})
+async function getExpense(){
+    const response = await axios.get("http://localhost:3003/expense/get-expense");
+    const expenses = response.data.expenses;
+    expenses.forEach(element => {
+        const newLi = document.createElement("li");
+        newLi.innerHTML=`${element.amount} - ${element.description} - ${element.category}`
+        const deleteBtn = document.createElement('button');
+        deleteBtn.innerHTML="Delete";
+        deleteBtn.classList.add('btn', 'btn-danger');
+        newLi.appendChild(deleteBtn)
+        expensesList.appendChild(newLi);
+    });
+}
