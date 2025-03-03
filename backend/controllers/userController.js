@@ -1,6 +1,11 @@
 
 const sequelize = require('../util/database');
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const User = require('../models/userModel');
+function generateAccessToken(id, name){
+  return jwt.sign({userId:id, name:name}, '9384098349io3jedkcmsdljtpo4i05-9-20-3lwjdksjhewy')
+}
 exports.signup= async(req, res)=>{
 try{
  const name = req.body.user.name;
@@ -11,18 +16,15 @@ try{
  }
  const saltRounds = 10;
  const hashedPassword = await bcrypt.hash(password, saltRounds);
- await sequelize.query("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", {
-    replacements: [name, email, hashedPassword], 
-});
-res.status(200).json({ message: "User added successfully"});
+const user = await User.create({ name, email, password: hashedPassword });
+const id = user.id;
+res.status(200).json({ message: "User added successfully", token: generateAccessToken(id, name)});
 }
 catch (error) {
     console.error("Database error:", error);
     res.status(500).json({ error: "Database error" });
 }
 }
-
-
 exports.login= async(req, res)=>{
     try{
      const email= req.body.user.email;
@@ -43,7 +45,7 @@ exports.login= async(req, res)=>{
           throw new Error("Something went wrong")
         }
         else if(result===true){
-          res.status(200).json({ message: "Login successful", user: emailExist });
+          res.status(200).json({ message: "Login successful", token: generateAccessToken(emailExist.id, emailExist.name) });
         }
         else{
           return res.status(401).json({ error: "Invalid password" });
