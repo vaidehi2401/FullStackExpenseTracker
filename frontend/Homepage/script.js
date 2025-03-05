@@ -1,9 +1,12 @@
 
-
 const container = document.getElementById("form-container")
 const expenseForm = document.getElementById("expense-form-container")
 const expenseButton = document.getElementById("expense-button");
 const expensesList = document.getElementById("liste");
+const premiumbtn = document.getElementById("premium-btn")
+const cashfree = Cashfree({
+    mode: "sandbox",
+});
 expenseButton.addEventListener('click', async(event)=>{
     event.preventDefault();
     const amount = document.getElementById("expense-amount").value.trim();
@@ -30,7 +33,7 @@ function renderExpense(element){
     newLi.innerHTML=`${element.amount} - ${element.description} - ${element.category}`
     const deleteBtn = document.createElement('button');
     deleteBtn.innerHTML="Delete";
-    deleteBtn.classList.add('btn', 'btn-danger');
+    deleteBtn.classList.add('btn', 'btn-danger', 'delete');
     newLi.appendChild(deleteBtn)
     expensesList.appendChild(newLi);
 }
@@ -43,8 +46,9 @@ async function getExpense(){
         newLi.innerHTML=`${element.amount} - ${element.description} - ${element.category}`
         const deleteBtn = document.createElement('button');
         deleteBtn.innerHTML="Delete";
-        deleteBtn.classList.add('btn', 'btn-danger');
+        deleteBtn.classList.add('btn', 'btn-danger', 'delete');
         newLi.appendChild(deleteBtn);
+        newLi.classList.add('newLi')
         deleteBtn.addEventListener('click', async()=>{
             try{
             const response = await axios.delete(`http://localhost:3003/expense/delete-expense/${element.id}`, 
@@ -62,4 +66,22 @@ console.log(err);
         expensesList.appendChild(newLi);
     });
 }
+premiumbtn.addEventListener('click', async()=>{
+    try{
+       const token= localStorage.getItem('token')
+        const data =await axios.get(`http://localhost:3003/getSessionId`, {headers:{"Authorization": token}} )
+        console.log(data.data.paymentSessionId)
+        const paymentSessionId=data.data.paymentSessionId;
+        let checkOutOptions = {
+            paymentSessionId: paymentSessionId,
+            redirectTarget: "_self",
+        };
+        await cashfree.checkout(checkOutOptions)
+    }
+    catch(err){
+        console.log(err);
+    }
+
+
+})
 window.addEventListener('DOMContentLoaded', getExpense);
