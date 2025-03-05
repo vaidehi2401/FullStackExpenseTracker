@@ -15,6 +15,7 @@ exports.getSessionId = async(req, res)=>{
        customerId,
       customerPhone
         )
+        
        res.status(200).json({paymentSessionId: sessionId});
 }
 exports.getPaymentStatus = async (req, res) => {
@@ -27,8 +28,7 @@ exports.getPaymentStatus = async (req, res) => {
         // Ensure orderStatus is a string
         const statusText = typeof orderStatus === "string" ? orderStatus.toLowerCase() : "unknown";
         try{
-
-       const membership1= await Membership.create({membershipStatus: orderStatus, userId: customerId});
+            const membership1= await Membership.create({membershipStatus: orderStatus, userId: customerId});
        console.log(membership1)
         }
        catch(err){
@@ -84,7 +84,7 @@ exports.getPaymentStatus = async (req, res) => {
                 <body>
                     <div class="status-container">
                         <h1>${orderStatus || "Unknown Status"}</h1>
-                        <button class="btn" onclick="window.location.href='../Homepage/index.html'">⬅ Back to Homepage</button>
+                        <button class="btn" onclick="window.location.href='/homepage'">⬅ Back to Homepage</button>
                     </div>
                 </body>
             </html>

@@ -4,6 +4,8 @@ const expenseForm = document.getElementById("expense-form-container")
 const expenseButton = document.getElementById("expense-button");
 const expensesList = document.getElementById("liste");
 const premiumbtn = document.getElementById("premium-btn")
+const premiumSection = document.getElementById("premium-section")
+const dashBoardbtn = document.getElementById("dashboard-btn")
 const cashfree = Cashfree({
     mode: "sandbox",
 });
@@ -19,9 +21,10 @@ expenseButton.addEventListener('click', async(event)=>{
     const token = localStorage.getItem('token')
    const expense ={amount, description, category};
    try{
-    const response = axios.post("http://localhost:3003/expense/add-expense", {expense}, { headers: { "Authorization": token}  });
+    const response = await axios.post("http://localhost:3003/expense/add-expense", {expense}, { headers: { "Authorization": token}  });
+    console.log(response.data)
     alert("Expense added successfully💴");
-    renderExpense(expense)
+    renderExpense(response.data)
     return;
    }
    catch(err){
@@ -35,10 +38,35 @@ function renderExpense(element){
     deleteBtn.innerHTML="Delete";
     deleteBtn.classList.add('btn', 'btn-danger', 'delete');
     newLi.appendChild(deleteBtn)
+    newLi.classList.add('newLi')
+    const token = localStorage.getItem('token')
+    deleteBtn.addEventListener('click', async()=>{
+        try{
+        const response = await axios.delete(`http://localhost:3003/expense/delete-expense/${element.id}`, 
+            {
+                headers: { "Authorization": token }
+            }  
+        )
+        newLi.remove();
+        console.log("Deleted!!")
+    }
+    catch(err){
+console.log(err);
+    }
+    })
     expensesList.appendChild(newLi);
+
+    document.getElementById("expense-amount").value="";
+    document.getElementById("expense-description").value ="";
+    document.getElementById("expense-category").value ="";
 }
 async function getExpense(){
     const token = localStorage.getItem('token')
+    const isPremium = await axios.get(`http://localhost:3003/premium/isPremium`, {headers:{"Authorization": token}} )
+       console.log(isPremium.data.isPremium)
+       if(isPremium.data.isPremium === true){
+        premiumSection.style.display="block"
+       }
     const response = await axios.get("http://localhost:3003/expense/get-expense", {headers:{"Authorization": token}});
     const expenses = response.data.expenses;
     expenses.forEach(element => {
@@ -69,7 +97,8 @@ console.log(err);
 premiumbtn.addEventListener('click', async()=>{
     try{
        const token= localStorage.getItem('token')
-        const data =await axios.get(`http://localhost:3003/getSessionId`, {headers:{"Authorization": token}} )
+       
+       const data =await axios.get(`http://localhost:3003/pay/getSessionId`, {headers:{"Authorization": token}} )
         console.log(data.data.paymentSessionId)
         const paymentSessionId=data.data.paymentSessionId;
         let checkOutOptions = {
@@ -81,7 +110,8 @@ premiumbtn.addEventListener('click', async()=>{
     catch(err){
         console.log(err);
     }
-
-
+})
+dashBoardbtn.addEventListener('click', ()=>{
+        window.location.href="/dashboard"
 })
 window.addEventListener('DOMContentLoaded', getExpense);

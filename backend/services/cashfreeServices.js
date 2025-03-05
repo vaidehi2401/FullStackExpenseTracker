@@ -22,7 +22,7 @@ const request ={
     },
 
     order_meta: {
-        "return_url": `http://localhost:3003/payment-status/${orderId}/${customerId}`,
+        "return_url": `http://localhost:3003/pay/payment-status/${orderId}/${customerId}`,
         "payment_methods": "cc,nb,upi"
     },
     order_expiry_time: formattedDate

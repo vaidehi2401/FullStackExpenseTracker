@@ -38,8 +38,7 @@ signUpButton.addEventListener('click', async (event) => {
         const response = await axios.post("http://localhost:3003/users/signup", { user });
         console.log("Signup successful", response.data);
      localStorage.setItem('token', response.data.token);
-       window.location.href="../Homepage/index.html"
-        
+     window.location.href="/homepage"    
     } catch (error) {
         alert("Email ID already registered!");
     }
@@ -58,7 +57,7 @@ loginButton.addEventListener('click', async(event)=>{
         const response = await axios.post("http://localhost:3003/users/login", { user });
         console.log("Login successful", response.data);
         localStorage.setItem('token', response.data.token);
-       window.location.href="../Homepage/index.html"
+       window.location.href="/homepage"
        
     } catch (error) {
         const status = error.response.status;
