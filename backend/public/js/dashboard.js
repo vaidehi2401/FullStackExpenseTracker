@@ -14,7 +14,7 @@ const newLi = document.createElement("li");
 if(element.totalExpense === null){
     element.totalExpense=0;
 }
-newLi.innerHTML = ` Name - ${element.name}  Total Expense- ${element.totalExpense}`;
+newLi.innerHTML = ` Name - ${element.name}  Total Expense- ${element.totalAmount}`;
 newLi.classList.add('newLi')
 userList.appendChild(newLi)
 });

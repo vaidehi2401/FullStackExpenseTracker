@@ -1,5 +1,6 @@
 const sequelize = require('../util/database');
 const Expense = require('../models/expenseModel');
+const Users = require('../models/userModel')
  // Import Expense model
 
  exports.postExpense = async (req, res) => {
@@ -11,13 +12,19 @@ const Expense = require('../models/expenseModel');
         }
 
         const userId = req.user.dataValues.id;
+        const user = await Users.findByPk(userId); 
+        let totalAmount = Number(user.totalAmount) || 0; // Default to 0 if null
+        totalAmount += Number(amount);
 
+      
         // ✅ Insert data into the database
         const [results] = await sequelize.query(
             "INSERT INTO Expenses (amount, description, category, userId) VALUES (?, ?, ?, ?)",
             { replacements: [amount, description, category, userId] }
         );
 
+        user.totalAmount = totalAmount;
+        await user.save();
         // ✅ Retrieve the newly created expense
         const [newExpense] = await sequelize.query(
             "SELECT * FROM Expenses WHERE id = LAST_INSERT_ID()"

@@ -8,6 +8,7 @@ function generateAccessToken(id, name){
 }
 exports.signup= async(req, res)=>{
 try{
+  
  const name = req.body.user.name;
  const email= req.body.user.email;
  const password = req.body.user.password;
@@ -16,7 +17,8 @@ try{
  }
  const saltRounds = 10;
  const hashedPassword = await bcrypt.hash(password, saltRounds);
-const user = await User.create({ name, email, password: hashedPassword });
+ const totalAmount=0;
+const user = await User.create({ name, email, password: hashedPassword, totalAmount});
 const id = user.id;
 res.status(200).json({ message: "User added successfully", token: generateAccessToken(id, name)});
 }

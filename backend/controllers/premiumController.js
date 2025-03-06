@@ -19,15 +19,8 @@ exports.isPremium= async(req, res)=>{
 exports.getPremiumData = async(req, res)=>{
 try{
 const leaderBoardUsers = await Users.findAll({
-    attributes: ['id', 'name', [sequelize.fn('sum', sequelize.col('Expenses.amount')), 'totalExpense']],
-    include:[
-        {
-            model: Expenses,
-            attributes: [], 
-          }
-    ],
-    group: ['User.id', 'User.name'],
-    order: [[sequelize.fn('SUM', sequelize.col('Expenses.amount')), 'DESC']]
+    attributes: ['id', 'name', 'totalAmount'],
+    order:[['totalAmount' , 'DESC']]
 })
 return res.status(200).json({data: leaderBoardUsers});
 }
