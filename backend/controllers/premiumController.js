@@ -18,15 +18,21 @@ exports.isPremium= async(req, res)=>{
 }
 exports.getPremiumData = async(req, res)=>{
 try{
-const data = await sequelize.query(`SELECT u.name, SUM(e.amount) AS totalExpense
-FROM Users u
-JOIN Expenses e ON u.id = e.userId
-GROUP BY u.id, u.name
-ORDER BY totalExpense DESC;
-`)
-return res.status(200).json({data: data});
+const leaderBoardUsers = await Users.findAll({
+    attributes: ['id', 'name', [sequelize.fn('sum', sequelize.col('Expenses.amount')), 'totalExpense']],
+    include:[
+        {
+            model: Expenses,
+            attributes: [], 
+          }
+    ],
+    group: ['User.id', 'User.name'],
+    order: [[sequelize.fn('SUM', sequelize.col('Expenses.amount')), 'DESC']]
+})
+return res.status(200).json({data: leaderBoardUsers});
 }
 catch(err){
+    console.log(err);
 return res.status(500).json({ error: "Internal Server Error" });
 }
 }
