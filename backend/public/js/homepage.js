@@ -22,7 +22,7 @@ expenseButton.addEventListener('click', async(event)=>{
    const expense ={amount, description, category};
    try{
     const response = await axios.post("http://localhost:3003/expense/add-expense", {expense}, { headers: { "Authorization": token}  });
-    console.log(response.data)
+    console.log("Here is response", response)
     alert("Expense added successfully💴");
     renderExpense(response.data)
     return;
